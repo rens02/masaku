@@ -34,7 +34,6 @@ func Show(c echo.Context) error {
 
 func Store(c echo.Context) error {
 	var user web.UserRequest
-	user.Role = models.UserRole
 
 	if err := c.Bind(&user); err != nil {
 		return c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid request body"))
@@ -63,7 +62,7 @@ func LoginUser(c echo.Context) error {
 	}
 
 	var user models.User
-	if err := config.DB.Where("email = ? AND role = ?", loginRequest.Email, models.UserRole).First(&user).Error; err != nil {
+	if err := config.DB.Where("email = ?", loginRequest.Email).First(&user).Error; err != nil {
 		return c.JSON(http.StatusUnauthorized, utils.ErrorResponse("Invalid login credentials"))
 	}
 
@@ -71,7 +70,7 @@ func LoginUser(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, utils.ErrorResponse("Invalid login credentials"))
 	}
 
-	token := middleware.CreateTokenUser(int(user.ID), user.Name)
+	token := middleware.CreateTokenUser(int(user.ID), user.Nama)
 
 	// Buat respons dengan data yang diminta
 	response := web.UserLoginResponse{
