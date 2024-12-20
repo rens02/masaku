@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Kategori struct {
 	ID        		uint `gorm:"primarykey"`
 	CreatedAt 		time.Time
 	UpdatedAt 		time.Time
