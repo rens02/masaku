@@ -7,14 +7,14 @@ import (
 )
 
 type Resep struct {
-	ID        		uint `gorm:"primarykey"`
-	CreatedAt 		time.Time
-	UpdatedAt 		time.Time
-	DeletedAt 		gorm.DeletedAt `gorm:"index"`
-	Nama_Makanan	string
-	Bahan			longtext
-	Cara_Pembuatan	longtext
-	Foto	  		string
-	KategoriID		uint
-	Kategori		Kategori `gorm:"ForeignKey:KategoriID"`
+	ID             uint `gorm:"primarykey"`
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	DeletedAt      gorm.DeletedAt `gorm:"index"`
+	Nama_Makanan   string
+	Bahan          string
+	Cara_Pembuatan string
+	Foto           string
+	KategoriID     uint
+	Kategori       Kategori `gorm:"ForeignKey:KategoriID"`
 }
