@@ -15,4 +15,6 @@ type Resep struct {
 	Bahan			longtext
 	Cara_Pembuatan	longtext
 	Foto	  		string
+	KategoriID		uint
+	Kategori		Kategori `gorm:"ForeignKey:KategoriID"`
 }
