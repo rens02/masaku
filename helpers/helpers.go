@@ -1,8 +1,8 @@
 package helpers
 
 import (
-	"app/config"
-	"app/models"
+	"masaku/config"
+	"masaku/models"
 )
 
 type KamarResponse struct {
