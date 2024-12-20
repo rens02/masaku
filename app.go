@@ -1,8 +1,8 @@
 package main
 
 import (
-	"app/config"
-	"app/routes"
+	"masaku/config"
+	"masaku/routes"
 )
 
 func main() {

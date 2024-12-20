@@ -1,8 +1,8 @@
 package res
 
 import (
-	"app/models"
-	"app/models/web"
+	"masaku/models"
+	"masaku/models/web"
 )
 
 func ConvertIndex(users []models.User) []web.UserReponse {
