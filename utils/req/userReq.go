@@ -7,7 +7,7 @@ import (
 
 func PassBody(users web.UserRequest) *models.User {
 	return &models.User{
-		Name:     users.Name,
+		Nama:     users.Nama,
 		Email:    users.Email,
 		Password: users.Password,
 	}
