@@ -46,7 +46,7 @@ func loadConfig() *ProgramConfig {
 		res.ServerPort = port
 	}
 
-	if val, found := os.LookupEnv("DBPORT"); found {
+	if val, found := os.LookupEnv("DB_PORT"); found {
 		port, err := strconv.Atoi(val)
 		if err != nil {
 			logrus.Error("Config : invalid db port value,", err.Error())
@@ -55,19 +55,19 @@ func loadConfig() *ProgramConfig {
 		res.DBPort = port
 	}
 
-	if val, found := os.LookupEnv("DBHOST"); found {
+	if val, found := os.LookupEnv("DB_HOST"); found {
 		res.DBHost = val
 	}
 
-	if val, found := os.LookupEnv("DBUSER"); found {
+	if val, found := os.LookupEnv("DB_USER"); found {
 		res.DBUser = val
 	}
 
-	if val, found := os.LookupEnv("DBPASS"); found {
+	if val, found := os.LookupEnv("DB_PASS"); found {
 		res.DBPass = val
 	}
 
-	if val, found := os.LookupEnv("DBNAME"); found {
+	if val, found := os.LookupEnv("DB_NAME"); found {
 		res.DBName = val
 	}
 
