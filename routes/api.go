@@ -1,34 +1,31 @@
 package routes
 
 import (
+	"masaku/config"
 	"masaku/controller"
-	"masaku/middleware"
-	"net/http"
-	"os"
 
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
-func Init() *echo.Echo {
-	AdminSecretKey := os.Getenv("ADMIN_SECRET")
-	UserSecretKey := os.Getenv("USER_SECRET")
+// RouteUser defines routes for user-related actions
+func RouteUser(e *echo.Echo, uc controller.UsersControlInterface, rc controller.ResepControlInterface, kc controller.KategoriControlInterface, cfg config.ProgramConfig) {
+	// Public routes
+	e.POST("masaku/users", uc.Register)       // Register a new user
+	e.POST("masaku/users/login", uc.LoginUser) // User login
 
-	e := echo.New()
+	// Protected routes
+	protected := e.Group("masaku/", echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(cfg.Secret),
+	}))
 
-	e.Use(middleware.NotFoundHandler)
-	Admin := e.Group("")
-	Admin.Use(echojwt.JWT([]byte(AdminSecretKey)))
-	User := e.Group("")
-	User.Use(echojwt.JWT([]byte(UserSecretKey)))
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Welcome to RESTful API Services")
-	})
+	protected.GET("users/profile", uc.Profile)            // Get authenticated user's profile
+	protected.GET("users/:id", uc.Show)    // Update authenticated user's profile
 
-	//BASIC LOGIN REGISTER USER/ADMIN
-	e.POST("/register", controller.Store)
-	e.POST("/user/login", controller.LoginUser)
+	protected.GET("reseps/:id", rc.ShowResep)
+	protected.GET("reseps", rc.ShowAllResep)
 
-	return e
+	protected.GET("kategori/:id", kc.ShowKategori)
+	protected.GET("kategori", kc.ShowAllKategori)
 
 }
