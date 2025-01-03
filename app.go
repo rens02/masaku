@@ -24,6 +24,8 @@ func main() {
 	// CloudinaryInterface := helpers.NewCloudninary(config.CloudinaryKey)
 
 	userControll := controller.NewUsersControl(db, jwtInterface)
+	ResepControll := controller.NewResepControl(db)
+	KategoriControll := controller.NewKategoriControl(db)
 
 
 	e.Pre(middleware.RemoveTrailingSlash())
@@ -37,7 +39,7 @@ func main() {
 	}))
 
 	// Rute untuk pengguna
-	routes.RouteUser(e, userControll, *config)
+	routes.RouteUser(e, userControll, ResepControll, KategoriControll ,*config)
 
 	// Jalankan server
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", config.ServerPort)))
