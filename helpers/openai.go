@@ -11,7 +11,7 @@ import (
 )
 
 type OpenAiInterface interface {
-	GenerateSaran(maag int, asamUrat int, hipertensi int) []web.OpenaiRes
+	GenerateSaran(maag int, asamUrat int, hipertensi int) web.OpenaiRes
 }
 
 type OpenAi struct {
@@ -24,7 +24,7 @@ func NewOpenAi(key string) OpenAiInterface {
 	}
 }
 
-func (op *OpenAi) GenerateSaran(maag int, asamUrat int, hipertensi int) []web.OpenaiRes {
+func (op *OpenAi) GenerateSaran(maag int, asamUrat int, hipertensi int) web.OpenaiRes {
 	var conditions []map[string]interface{}
 
 	// Menambahkan kondisi berdasarkan parameter
@@ -52,16 +52,18 @@ func (op *OpenAi) GenerateSaran(maag int, asamUrat int, hipertensi int) []web.Op
 
 	// Jika tidak ada kondisi, kembalikan respons default
 	if len(conditions) == 0 {
-		return []web.OpenaiRes{{
+		return web.OpenaiRes{
 			Saran: "Hasil formulir menunjukkan tidak ada indikasi signifikan terhadap maag, asam urat, atau hipertensi. Tetap jaga pola hidup sehat dan periksakan diri secara rutin untuk memastikan kesehatanmu tetap optimal!",
-		}}
+		}
 	}
 
 	// Mengonversi kondisi menjadi JSON string untuk digunakan dalam prompt
 	conditionsJSON, err := json.Marshal(conditions)
 	if err != nil {
 		logrus.Error("JSON Marshal error: ", err.Error())
-		return nil
+		return web.OpenaiRes{
+			Saran: "Terjadi kesalahan saat memproses data. Silakan coba lagi nanti.",
+		}
 	}
 
 	client := openai.NewClient(op.Key)
@@ -78,14 +80,18 @@ func (op *OpenAi) GenerateSaran(maag int, asamUrat int, hipertensi int) []web.Op
 
 	if err != nil {
 		logrus.Error("CreateCompletion error: ", err.Error())
-		return nil
+		return web.OpenaiRes{
+			Saran: "Terjadi kesalahan saat menghubungi layanan OpenAI. Silakan coba lagi nanti.",
+		}
 	}
 
 	// Parsing respons dari OpenAI
-	var recommendations []web.OpenaiRes
+	var recommendations web.OpenaiRes
 	if err := json.Unmarshal([]byte(resp.Choices[0].Text), &recommendations); err != nil {
 		logrus.Error("JSON Unmarshal error: ", err.Error())
-		return nil
+		return web.OpenaiRes{
+			Saran: "Terjadi kesalahan saat memproses hasil dari OpenAI. Silakan coba lagi nanti.",
+		}
 	}
 
 	return recommendations

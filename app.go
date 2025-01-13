@@ -20,12 +20,13 @@ func main() {
 	database.Migrate(db)
 
 	jwtInterface := helpers.New(config.Secret)
-	// openAiInterface := helpers.NewOpenAi(config.OpenAiKey)
+	openAiInterface := helpers.NewOpenAi(config.OpenAiKey)
 	// CloudinaryInterface := helpers.NewCloudninary(config.CloudinaryKey)
 
 	userControll := controller.NewUsersControl(db, jwtInterface)
 	ResepControll := controller.NewResepControl(db)
 	KategoriControll := controller.NewKategoriControl(db)
+	GenereteControll := controller.NewGenerateControl(db, jwtInterface, openAiInterface)
 
 
 	e.Pre(middleware.RemoveTrailingSlash())
@@ -39,7 +40,7 @@ func main() {
 	}))
 
 	// Rute untuk pengguna
-	routes.RouteUser(e, userControll, ResepControll, KategoriControll ,*config)
+	routes.RouteUser(e, userControll, ResepControll, KategoriControll , GenereteControll,*config)
 
 	// Jalankan server
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", config.ServerPort)))
