@@ -19,4 +19,5 @@ type User struct {
 	Maag		int
 	Asam_urat	int
 	Hipertensi	int
+	Saran       string
 }

@@ -1,8 +1,7 @@
 package controller
 
 import (
-	"masaku/config"
-	"masaku/middleware"
+	"masaku/helpers"
 	"masaku/models"
 	"masaku/models/web"
 	"masaku/utils"
@@ -13,49 +12,69 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
-func Show(c echo.Context) error {
+type UsersControlInterface interface {
+	Show(c echo.Context) error
+	Register(c echo.Context) error
+	LoginUser(c echo.Context) error
+	Profile(c echo.Context) error
+}
+
+type UsersModel struct {
+	db *gorm.DB
+	jwt helpers.JWTInterface
+}
+
+func NewUsersControl(db *gorm.DB, jwt helpers.JWTInterface) UsersControlInterface {
+	return &UsersModel{db: db, jwt : jwt}
+}
+
+// Show retrieves a user by ID
+func (um *UsersModel) Show(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid ID"))
 	}
 
 	var user models.User
-
-	if err := config.DB.First(&user, id).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to retrieve user"))
+	if err := um.db.First(&user, id).Error; err != nil {
+		return c.JSON(http.StatusNotFound, utils.ErrorResponse("User not found"))
 	}
 
 	response := res.ConvertGeneral(&user)
-
 	return c.JSON(http.StatusOK, utils.SuccessResponse("User data successfully retrieved", response))
 }
 
-func Store(c echo.Context) error {
+
+func (um *UsersModel) Register(c echo.Context) error {
 	var user web.UserRequest
-	user.Role = models.UserRole
 
 	if err := c.Bind(&user); err != nil {
 		return c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid request body"))
 	}
 
+	// Validate user input
+	if user.Email == "" || user.Password == "" {
+		return c.JSON(http.StatusBadRequest, utils.ErrorResponse("Email and Password are required"))
+	}
+
 	userDb := req.PassBody(user)
 
-	// Hash the user's password before storing it
-	userDb.Password = middleware.HashPassword(userDb.Password)
+	// Hash the password
+	userDb.Password = helpers.HashPassword(userDb.Password)
 
-	if err := config.DB.Create(&userDb).Error; err != nil {
+	if err := um.db.Create(&userDb).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to store user data"))
 	}
 
-	// Return the response without including a JWT token
 	response := res.ConvertGeneral(userDb)
-
-	return c.JSON(http.StatusCreated, utils.SuccessResponse("Success Created Data", response))
+	return c.JSON(http.StatusCreated, utils.SuccessResponse("User successfully created", response))
 }
 
-func LoginUser(c echo.Context) error {
+// LoginUser handles user login
+func (um *UsersModel) LoginUser(c echo.Context) error {
 	var loginRequest web.LoginRequest
 
 	if err := c.Bind(&loginRequest); err != nil {
@@ -63,38 +82,35 @@ func LoginUser(c echo.Context) error {
 	}
 
 	var user models.User
-	if err := config.DB.Where("email = ? AND role = ?", loginRequest.Email, models.UserRole).First(&user).Error; err != nil {
+	if err := um.db.Where("email = ?", loginRequest.Email).First(&user).Error; err != nil {
 		return c.JSON(http.StatusUnauthorized, utils.ErrorResponse("Invalid login credentials"))
 	}
 
-	if err := middleware.ComparePassword(user.Password, loginRequest.Password); err != nil {
+	if err := helpers.ComparePassword(user.Password, loginRequest.Password); err != nil {
 		return c.JSON(http.StatusUnauthorized, utils.ErrorResponse("Invalid login credentials"))
 	}
 
-	token := middleware.CreateTokenUser(int(user.ID), user.Name)
+	token := um.jwt.GenerateJWT(uint(user.ID), user.Nama)
 
-	// Buat respons dengan data yang diminta
 	response := web.UserLoginResponse{
 		Email: user.Email,
 		Token: token,
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessResponse("LoginUser successful", response))
+	return c.JSON(http.StatusOK, utils.SuccessResponse("Login successful", response))
 }
 
-func Profile(c echo.Context) error {
+// Profile retrieves the profile of the authenticated user
+func (um *UsersModel) Profile(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	ID := int(claims["id"].(float64))
 
 	var profile models.User
-
-	if err := config.DB.First(&profile, ID).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ErrorResponse("Failed to retrieve user"))
+	if err := um.db.First(&profile, ID).Error; err != nil {
+		return c.JSON(http.StatusNotFound, utils.ErrorResponse("User not found"))
 	}
 
 	response := res.ConvertGeneral(&profile)
-
-	return c.JSON(http.StatusOK, utils.SuccessResponse("User data successfully retrieved", response))
-
+	return c.JSON(http.StatusOK, utils.SuccessResponse("User profile retrieved successfully", response))
 }
