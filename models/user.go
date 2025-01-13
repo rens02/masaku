@@ -19,5 +19,5 @@ type User struct {
 	Maag		int
 	Asam_urat	int
 	Hipertensi	int
-	saran       string
+	Saran       string
 }

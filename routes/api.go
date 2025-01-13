@@ -9,7 +9,7 @@ import (
 )
 
 // RouteUser defines routes for user-related actions
-func RouteUser(e *echo.Echo, uc controller.UsersControlInterface, rc controller.ResepControlInterface, kc controller.KategoriControlInterface, cfg config.ProgramConfig) {
+func RouteUser(e *echo.Echo, uc controller.UsersControlInterface, rc controller.ResepControlInterface, kc controller.KategoriControlInterface, gc controller.GenerateControllInterface ,cfg config.ProgramConfig) {
 	// Public routes
 	e.POST("masaku/users", uc.Register)       // Register a new user
 	e.POST("masaku/users/login", uc.LoginUser) // User login
@@ -27,5 +27,7 @@ func RouteUser(e *echo.Echo, uc controller.UsersControlInterface, rc controller.
 
 	protected.GET("kategori/:id", kc.ShowKategori)
 	protected.GET("kategori", kc.ShowAllKategori)
+
+	protected.POST("saran", gc.Generate)
 
 }

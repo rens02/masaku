@@ -10,6 +10,7 @@ type UserReponse struct {
 	Maag       int    `json:"maag" form:"maag"`
 	Asam_urat  int    `json:"asam_urat" form:"asam_urat"`
 	Hipertensi int    `json:"hipertensi" form:"hipertensi"`
+	Saran       string  `json:"saran" form:"saran"`
 }
 
 type UserLoginResponse struct {

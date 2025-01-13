@@ -34,5 +34,6 @@ func ConvertGeneral(user *models.User) web.UserReponse {
 		Maag:       user.Maag,
 		Asam_urat:  user.Asam_urat,
 		Hipertensi: user.Hipertensi,
+		Saran: user.Saran,
 	}
 }
