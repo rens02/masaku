@@ -15,6 +15,7 @@ func ConvertResep(reseps []models.Resep) []web.ResepResponse {
 			Cara_Pembuatan: resep.Cara_Pembuatan,
 			Foto:           resep.Foto,
 			KategoriID:     resep.KategoriID,
+			Kategori:       resep.Kategori.Nama_Kategori,
 		}
 		results = append(results, resepResponse)
 	}
@@ -30,5 +31,6 @@ func ConvertGeneralResep(resep *models.Resep) web.ResepResponse {
 		Cara_Pembuatan: resep.Cara_Pembuatan,
 		Foto:           resep.Foto,
 		KategoriID:     resep.KategoriID,
+		Kategori:       resep.Kategori.Nama_Kategori,
 	}
 }
