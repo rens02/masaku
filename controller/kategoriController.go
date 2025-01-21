@@ -22,11 +22,11 @@ type KategoriModel struct {
 }
 
 func NewKategoriControl(db *gorm.DB) KategoriControlInterface {
-	return &UsersModel{db: db}
+	return &KategoriModel{db: db}
 }
 
 // Show retrieves a Kategori by ID
-func (um *UsersModel) ShowKategori(c echo.Context) error {
+func (um *KategoriModel) ShowKategori(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid ID"))
@@ -43,10 +43,10 @@ func (um *UsersModel) ShowKategori(c echo.Context) error {
 
 
 // Show retrieves a Kategori 
-func (um *UsersModel) ShowAllKategori(c echo.Context) error {
+func (um *KategoriModel) ShowAllKategori(c echo.Context) error {
 	
 	var Kategoris []models.Kategori
-	if err := um.db.Select(&Kategoris).Error; err != nil {
+	if err := um.db.Find(&Kategoris).Error; err != nil {
 		return c.JSON(http.StatusNotFound, utils.ErrorResponse("Kategori not found"))
 	}
 
