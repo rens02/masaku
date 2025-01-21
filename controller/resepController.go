@@ -22,18 +22,18 @@ type ResepModel struct {
 }
 
 func NewResepControl(db *gorm.DB) ResepControlInterface {
-	return &UsersModel{db: db}
+	return &ResepModel{db: db}
 }
 
 // Show retrieves a resep by ID
-func (um *UsersModel) ShowResep(c echo.Context) error {
+func (um *ResepModel) ShowResep(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.ErrorResponse("Invalid ID"))
 	}
 
 	var resep models.Resep
-	if err := um.db.First(&resep, id).Error; err != nil {
+	if err := um.db.Preload("Kategori").First(&resep, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, utils.ErrorResponse("resep not found"))
 	}
 
@@ -42,10 +42,10 @@ func (um *UsersModel) ShowResep(c echo.Context) error {
 }
 
 // Show retrieves a resep 
-func (um *UsersModel) ShowAllResep(c echo.Context) error {
+func (um *ResepModel) ShowAllResep(c echo.Context) error {
 	
 	var reseps []models.Resep
-	if err := um.db.Select(&reseps).Error; err != nil {
+	if err := um.db.Preload("Kategori").Find(&reseps).Error; err != nil {
 		return c.JSON(http.StatusNotFound, utils.ErrorResponse("resep not found"))
 	}
 
