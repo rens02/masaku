@@ -11,7 +11,6 @@ func ConvertKategori(kategoris []models.Kategori) []web.KategoriResponse {
 		kategoriResponse := web.KategoriResponse{
 			ID:            int(kategori.ID),
 			Nama_Kategori: kategori.Nama_Kategori,
-			Foto:          kategori.Foto,
 		}
 		results = append(results, kategoriResponse)
 	}
@@ -23,6 +22,5 @@ func ConvertGeneralKategori(kategori *models.Kategori) web.KategoriResponse {
 	return web.KategoriResponse{
 		ID:            int(kategori.ID),
 		Nama_Kategori: kategori.Nama_Kategori,
-		Foto:          kategori.Foto,
 	}
 }

@@ -12,5 +12,4 @@ type Kategori struct {
 	UpdatedAt 		time.Time
 	DeletedAt 		gorm.DeletedAt `gorm:"index"`
 	Nama_Kategori   string
-	Foto	  		string
 }
